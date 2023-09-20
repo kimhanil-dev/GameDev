@@ -10,6 +10,7 @@
 #include "EdGraphSchema_K2.h"
 #include "Engine/DataTable.h"
 #include "K2Node_CallFunction.h"
+#include "K2Node_IfThenElse.h"
 
 #define LOCTEXT_NAMESPACE "K2Node_GetEnemyAction"
 
@@ -199,6 +200,8 @@ void UK2Node_GetEnemyAction::ExpandNode(FKismetCompilerContext& CompilerContext,
 		return;
 	}
 
+	// 왜 Node로 CallFunction기능을 가져와, DataTableFunctionLibrary를 실행시켰는가.
+	// 그냥 DataTableFunctionLibrary를 실행시키면 되는것 아닌가?
 	// FUNCTION NODE
 	const FName FunctionName = GET_FUNCTION_NAME_CHECKED(UDataTableFunctionLibrary, GetDataTableRowFromName);
 	UK2Node_CallFunction* GetDataTableRowFunction = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph);
@@ -220,6 +223,29 @@ void UK2Node_GetEnemyAction::ExpandNode(FKismetCompilerContext& CompilerContext,
 	}
 	UEdGraphPin* RowNameInPin = GetDataTableRowFunction->FindPinChecked(TEXT("RowName"));
 	CompilerContext.MovePinLinksToIntermediate(*GetEnemyNamePin(), *RowNameInPin);
+
+	// function node 핀들과, 이 핀의 리턴 핀 가져오기
+	UEdGraphPin* OriginalOutActionPin = FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue);
+	UEdGraphPin* FunctionOutRowPin = GetDataTableRowFunction->FindPinChecked(TEXT("OutRow"));
+	UEdGraphPin* FunctionReturnPin = GetDataTableRowFunction->FindPinChecked(UEdGraphSchema_K2::PN_ReturnValue);
+	UEdGraphPin* FunctionThenPin = GetDataTableRowFunction->GetThenPin();
+
+	// OutRow핀의 타입을 오리지널과 맞추기
+	FunctionOutRowPin->PinType = OriginalOutActionPin->PinType;
+	FunctionOutRowPin->PinType.PinSubCategoryObject = OriginalOutActionPin->PinType.PinSubCategoryObject;
+
+	//BRANCH NODE
+	UK2Node_IfThenElse* BranchNode = CompilerContext.SpawnIntermediateNode<UK2Node_IfThenElse>(this, SourceGraph);
+	BranchNode->AllocateDefaultPins();
+	// Hook up inputs to branch
+	FunctionThenPin->MakeLinkTo(BranchNode->GetExecPin());
+	FunctionReturnPin->MakeLinkTo(BranchNode->GetConditionPin());
+
+	CompilerContext.MovePinLinksToIntermediate(*GetThenPin(), *(BranchNode->GetThenPin()));
+	CompilerContext.MovePinLinksToIntermediate(*GetActionNotFoundPin(), *(BranchNode->GetElsePin()));
+	CompilerContext.MovePinLinksToIntermediate(*OriginalOutActionPin, *FunctionOutRowPin);
+
+	BreakAllNodeLinks()
 }
 
 #undef LOCTEXT_NAMESPACE
