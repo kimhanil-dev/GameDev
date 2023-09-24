@@ -2,8 +2,17 @@
 
 #pragma once
 
+#include "Containers/Array.h"
 #include "CoreMinimal.h"
+#include "EdGraph/EdGraphNode.h"
+#include "EdGraph/EdGraphNodeUtils.h"
+#include "HAL/PlatformCrt.h"
+#include "Internationalization/Text.h"
 #include "K2Node.h"
+#include "Textures/SlateIcon.h"
+#include "UObject/ObjectMacros.h"
+#include "UObject/UObjectGlobals.h"
+
 #include "K2Node_GetEnemyAction.generated.h"
 
 class FBlueprintActionDatabaseRegistrar;

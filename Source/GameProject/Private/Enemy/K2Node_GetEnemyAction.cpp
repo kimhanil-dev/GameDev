@@ -61,6 +61,7 @@ void UK2Node_GetEnemyAction::AllocateDefaultPins()
 	UEdGraphPin* ActionNamePin = CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Name, GetEnemyActionHelper::ActionNamePinName);
 	SetPinToolTip(*DataTablePin, LOCTEXT("ActionNamePinDescription", "The name of action of the enemy to retrieve from the Enemy_DataTable"));
 
+
 	Super::AllocateDefaultPins();
 }
 
@@ -200,6 +201,7 @@ void UK2Node_GetEnemyAction::ExpandNode(FKismetCompilerContext& CompilerContext,
 		return;
 	}
 
+
 	// 왜 Node로 CallFunction기능을 가져와, DataTableFunctionLibrary를 실행시켰는가.
 	// 그냥 DataTableFunctionLibrary를 실행시키면 되는것 아닌가?
 	// FUNCTION NODE
@@ -245,7 +247,7 @@ void UK2Node_GetEnemyAction::ExpandNode(FKismetCompilerContext& CompilerContext,
 	CompilerContext.MovePinLinksToIntermediate(*GetActionNotFoundPin(), *(BranchNode->GetElsePin()));
 	CompilerContext.MovePinLinksToIntermediate(*OriginalOutActionPin, *FunctionOutRowPin);
 
-	BreakAllNodeLinks()
+	BreakAllNodeLinks();
 }
 
 #undef LOCTEXT_NAMESPACE

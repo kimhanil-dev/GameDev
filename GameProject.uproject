@@ -10,7 +10,17 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"CoreUObject"
+				"CoreUObject",
+				"BlueprintGraph"
+			]
+		},
+		{
+			"Name": "Kimhanil",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"BlueprintGraph",
+				"Engine"
 			]
 		}
 	],
