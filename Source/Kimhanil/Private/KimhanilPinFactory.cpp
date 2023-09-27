@@ -5,6 +5,7 @@
 
 #include "Engine/DataTable.h"
 #include "SGraphPinDataTableRowName.h"
+#include "EnemyType.h"
 #include "K2Node_SetEnemyAction.h"
 
 TSharedPtr<class SGraphPin> FKimhanilPinFactory::CreatePin(UEdGraphPin* InPin) const
@@ -14,38 +15,47 @@ TSharedPtr<class SGraphPin> FKimhanilPinFactory::CreatePin(UEdGraphPin* InPin) c
 		UObject* Outer = InPin->GetOuter();
 
 		const UEdGraphPin* DataTablePin = nullptr;
+		const UEdGraphPin* RowNamePin = nullptr;
 		if (Outer->IsA(UK2Node_SetEnemyAction::StaticClass()))
 		{
 			const UK2Node_SetEnemyAction* SetEnemyActionNode = CastChecked<UK2Node_SetEnemyAction>(Outer);
 			DataTablePin = SetEnemyActionNode->GetDataTablePin();
+			RowNamePin	 = SetEnemyActionNode->GetRowNamePin();
 		}
 
+		UDataTable* DataTable = nullptr;
 		if (DataTablePin)
 		{
 			if (DataTablePin->DefaultObject != nullptr && DataTablePin->LinkedTo.Num() == 0)
 			{
-				if (auto DataTable = Cast<UDataTable>(DataTablePin->DefaultObject))
+				DataTable = Cast<UDataTable>(DataTablePin->DefaultObject);
+			}
+		}
+
+		if (DataTable)
+		{
+			if (InPin->PinName == TEXT("RowName"))
+			{
+				return SNew(SGraphPinDataTableRowName, InPin, DataTable);
+			}
+			else if(InPin->PinName == TEXT("ActionName"))
+			{
+				FEnemyType* RowData = DataTable->FindRow<FEnemyType>(FName(*RowNamePin->GetDefaultAsString()), TEXT("EnemyAction"));
+				if (RowData != nullptr)
 				{
-					return SNew(SGraphPinDataTableRowName, InPin, DataTable);
-				}
-				if (DataTablePin->DefaultObject->IsA(UCurveTable::StaticClass()))
-				{
-					UCurveTable* CurveTable = (UCurveTable*)DataTablePin->DefaultObject;
-					if (CurveTable)
+					TArray<TSharedPtr<FName>> NameList;
+					for (FName Iter : RowData->Actions)
 					{
-						TArray<TSharedPtr<FName>> RowNames;
-						/** Extract all the row names from the RowMap */
-						for (TMap<FName, FRealCurve*>::TConstIterator Iterator(CurveTable->GetRowMap()); Iterator; ++Iterator)
-						{
-							/** Create a simple array of the row names */
-							TSharedPtr<FName> RowNameItem = MakeShareable(new FName(Iterator.Key()));
-							RowNames.Add(RowNameItem);
-						}
-						return SNew(SGraphPinNameList, InPin, RowNames);
+						TSharedPtr<FName> ActionName = MakeShareable(new FName(Iter));
+						NameList.Add(ActionName);
 					}
+
+					return SNew(SGraphPinNameList, InPin, NameList);
 				}
 			}
 		}
+
+		return nullptr;
 	}
 
 	

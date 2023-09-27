@@ -7,7 +7,7 @@
 /**
  * 
  */
-class KIMHANIL_API FKimhanilPinFactory : FGraphPanelPinFactory
+class KIMHANIL_API FKimhanilPinFactory : public FGraphPanelPinFactory
 {
 
 	virtual TSharedPtr<class SGraphPin> CreatePin(class UEdGraphPin* InPin) const override;

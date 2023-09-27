@@ -15,6 +15,8 @@ class UObject;
 class UScriptStruct;
 struct FLinearColor;
 
+DECLARE_LOG_CATEGORY_EXTERN(LogKimhanil, Log, All)
+
 /**
  * 
  */
@@ -30,7 +32,6 @@ class KIMHANIL_API UK2Node_SetEnemyAction : public UK2Node
 	virtual FText GetTooltipText() const override;
 	virtual void ExpandNode(class FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;
 	virtual FSlateIcon GetIconAndTint(FLinearColor& OutColor) const override;
-	virtual void PostReconstructNode() override;
 	//~ End UEdGraphNode Interface.
 
 	//~ Begin UK2Node Interface
@@ -38,14 +39,12 @@ class KIMHANIL_API UK2Node_SetEnemyAction : public UK2Node
 	virtual void ReallocatePinsDuringReconstruction(TArray<UEdGraphPin*>& OldPins) override;
 	virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 	virtual FText GetMenuCategory() const override;
-	virtual bool IsConnectionDisallowed(const UEdGraphPin* MyPin, const UEdGraphPin* OtherPin, FString& OutReason) const override;
 	virtual void EarlyValidation(class FCompilerResultsLog& MessageLog) const override;
 	virtual void PreloadRequiredAssets() override;
 	virtual void NotifyPinConnectionListChanged(UEdGraphPin* Pin) override;
 	//~ End UK2Node Interface
 
-	/** Get the return type of our struct */
-	UScriptStruct* GetReturnTypeForStruct();
+	virtual bool IsNodePure() const override { return true; }
 
 	/** Get the then output pin */
 	UEdGraphPin* GetThenPin() const;
@@ -53,13 +52,10 @@ class KIMHANIL_API UK2Node_SetEnemyAction : public UK2Node
 	UEdGraphPin* GetDataTablePin(const TArray<UEdGraphPin*>* InPinsToSearch = NULL) const;
 	/** Get the spawn transform input pin */
 	UEdGraphPin* GetRowNamePin() const;
-	/** Get the exec output pin for when the row was not found */
-	UEdGraphPin* GetRowNotFoundPin() const;
-	/** Get the result output pin */
-	UEdGraphPin* GetResultPin() const;
-
-	/** Get the type of the TableRow to return */
-	UScriptStruct* GetDataTableRowStructType() const;
+	/** Get the spawn transform input pin */
+	UEdGraphPin* GetActionNamePin() const;
+	/** Get the spawn transform output pin */
+	UEdGraphPin* GetActionNameOutPin() const;
 
 	void OnDataTableRowListChanged(const UDataTable* DataTable);
 private:
@@ -72,10 +68,6 @@ private:
 	 */
 	void SetPinToolTip(UEdGraphPin& MutatablePin, const FText& PinDescription) const;
 
-	/** Set the return type of our struct */
-	void SetReturnTypeForStruct(UScriptStruct* InClass);
-	/** Queries for the authoritative return type, then modifies the return pin to match */
-	void RefreshOutputPinType();
 	/** Triggers a refresh which will update the node's widget; aimed at updating the dropdown menu for the RowName input */
 	void RefreshRowNameOptions();
 

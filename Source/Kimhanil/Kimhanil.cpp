@@ -5,11 +5,13 @@
 #include "Templates/SharedPointer.h"
 #include "SGraphPinDataTableRowName.h"
 #include "K2Node_SetEnemyAction.h"
+#include "BlueprintGraphPanelPinFactory.h"
 #include "KimhanilPinFactory.h"
 
 IMPLEMENT_MODULE( FKimhanilModuleImpl, Kimhanil );
 
 void FKimhanilModuleImpl::StartupModule()
 {
-	FEdGraphUtilities::RegisterVisualPinFactory(MakeShared<FKimhanilPinFactory,ESPMode::ThreadSafe>(new FKimhanilPinFactory()));
+	FEdGraphUtilities::RegisterVisualPinFactory(MakeShareable(new FKimhanilPinFactory()));
+	FEdGraphUtilities::RegisterVisualPinFactory(MakeShareable(new FBlueprintGraphPanelPinFactory()));
 }
