@@ -10,6 +10,6 @@ public class GameProjectEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 
-		ExtraModuleNames.AddRange( new string[] { "GameProject" } );
+		ExtraModuleNames.AddRange( new string[] { "GameProject", "Kimhanil" } );
 	}
 }
