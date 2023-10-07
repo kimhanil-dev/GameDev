@@ -9,14 +9,14 @@
 
 DECLARE_DYNAMIC_DELEGATE(FCollisionTester);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class GAMEPROJECT_API UAttackColisionTester : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UAttackColisionTester();
+	UAttackColisionTester(const FObjectInitializer& ObjectInitializer);
 
 protected:
 

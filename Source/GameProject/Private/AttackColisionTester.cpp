@@ -5,20 +5,19 @@
 
 DEFINE_LOG_CATEGORY_STATIC(AttackCollisionTester, Error, Warning)
 
-// Sets default values for this component's properties
-UAttackColisionTester::UAttackColisionTester()
+UAttackColisionTester::UAttackColisionTester(const FObjectInitializer& ObjectInitializer)
+	:Super(ObjectInitializer)
 {
+	PrimaryComponentTick.bStartWithTickEnabled = true;
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 // Called when the game starts
 void UAttackColisionTester::BeginPlay()
 {
 	Super::BeginPlay();
-
-	bAutoActivate = true;
 	PrimaryComponentTick.bCanEverTick = true;
 	// ...
-	
 }
 
 
@@ -26,8 +25,6 @@ void UAttackColisionTester::BeginPlay()
 void UAttackColisionTester::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	UE_LOG(AttackCollisionTester,Warning,TEXT("Ticking.."));
 
 	if (NowWorkingTester)
 	{
